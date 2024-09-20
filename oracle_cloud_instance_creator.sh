@@ -33,6 +33,8 @@ profile="DEFAULT"
 
 while true; do
 
+    echo "Attempting to launch instance..."
+    
     oci compute instance launch --no-retry  \
     --auth api_key \
     --profile "$profile" \
@@ -45,6 +47,14 @@ while true; do
     --shape-config "{'ocpus':$cpus,'memoryInGBs':$ram}" \
     --boot-volume-size-in-gbs "$bootVolume" \
     --ssh-authorized-keys-file "$PATH_TO_PUBLIC_SSH_KEY"
+    
+    # Check if the command was successful
+    if [ $? -eq 0 ]; then
+        echo "Instance created successfully! Exiting."
+        break
+    else
+        echo "Instance creation failed. Retrying in $requestInterval seconds..."
+    fi
 
     sleep $requestInterval
 done
